@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.12">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Models\" />
+    <None Remove="Data\" />
+    <None Remove="Repocitories\" />
+    <None Remove="Repocitories\Impelemententions\" />
+    <None Remove="Repocitories\Interfaces\" />
+    <None Remove="Services\" />
+    <None Remove="Services\Impelementations\" />
+    <None Remove="Services\Interfaces\" />
+    <None Remove="DTOs\" />
+    <None Remove="DTOs\BookDTO\" />
+    <None Remove="DTOs\AuthorDTO\" />
+    <None Remove="DTOs\LoanDTO\" />
+    <None Remove="DTOs\LoanItemDTO\" />
+    <None Remove="DTOs\BorrowerDTO\" />
+    <None Remove="AllExceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Data\" />
+    <Folder Include="Repocitories\" />
+    <Folder Include="Repocitories\Impelemententions\" />
+    <Folder Include="Repocitories\Interfaces\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\Impelementations\" />
+    <Folder Include="Services\Interfaces\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="DTOs\BookDTO\" />
+    <Folder Include="DTOs\AuthorDTO\" />
+    <Folder Include="DTOs\LoanDTO\" />
+    <Folder Include="DTOs\LoanItemDTO\" />
+    <Folder Include="DTOs\BorrowerDTO\" />
+    <Folder Include="AllExceptions\" />
+  </ItemGroup>
+</Project>
