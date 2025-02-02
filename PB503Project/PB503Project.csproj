@@ -28,7 +28,6 @@
     <None Remove="DTOs\BookDTO\" />
     <None Remove="DTOs\AuthorDTO\" />
     <None Remove="DTOs\LoanDTO\" />
-    <None Remove="DTOs\LoanItemDTO\" />
     <None Remove="DTOs\BorrowerDTO\" />
     <None Remove="AllExceptions\" />
   </ItemGroup>
@@ -45,7 +44,6 @@
     <Folder Include="DTOs\BookDTO\" />
     <Folder Include="DTOs\AuthorDTO\" />
     <Folder Include="DTOs\LoanDTO\" />
-    <Folder Include="DTOs\LoanItemDTO\" />
     <Folder Include="DTOs\BorrowerDTO\" />
     <Folder Include="AllExceptions\" />
   </ItemGroup>

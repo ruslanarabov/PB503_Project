@@ -12,6 +12,8 @@ namespace PB503Project.Repocitories.Interfaces
 		void Delete(T entity);
 
 		void Commit();
+
+		T GetById(int id);
 	}
 }
 

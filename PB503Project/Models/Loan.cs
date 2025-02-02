@@ -5,6 +5,8 @@ namespace PB503Project.Models
 	{
 		public int BorrowId { get; set; }
 
+		public Borrower Borrower { get; set; }
+
 		public DateTime LoanDate { get; set; }
 
 		public DateTime MustReturnDate { get; set; }
@@ -15,4 +17,5 @@ namespace PB503Project.Models
 
 	}
 }
+
 

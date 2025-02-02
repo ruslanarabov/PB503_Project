@@ -3,6 +3,8 @@ namespace PB503Project.DTOs.BookDTO
 {
 	public class GetAllBooksDTO
 	{
+		public int Id { get; set; }
+
 		public List<string> Authors { get; set; }
 
 		public bool IsBorow { get; set; }
@@ -16,4 +18,5 @@ namespace PB503Project.DTOs.BookDTO
 	}
 
 }
+
 

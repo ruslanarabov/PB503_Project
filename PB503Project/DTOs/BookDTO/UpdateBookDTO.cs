@@ -8,7 +8,8 @@ namespace PB503Project.DTOs.BookDTO
 		public string Title { get; set; }
 
 		public int PublishYear { get; set; }
+
+		public List<int> AuthorsId { get; set; }
 	}
-	
 }
 

@@ -29,6 +29,11 @@ namespace PB503Project.Repocitories.Impelemententions
         {
             return _appDbContext.Set<T>().ToList();
         }
+
+        public T GetById(int id)
+        {
+            return _appDbContext.Set<T>().FirstOrDefault(x => x.Id == id);
+        }
     }
 }
 
