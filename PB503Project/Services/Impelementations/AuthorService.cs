@@ -28,7 +28,7 @@ namespace PB503Project.Services.Impelementations
         public List<GetAllAuthorsDTO> GetAll()
         {
             var author = _authorRepocitory.GetAll();
-            if (author is null)
+            if (author.Any())
             {
                 throw new InvalidInputException("There is no Author!");
             }

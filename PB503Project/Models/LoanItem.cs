@@ -10,8 +10,6 @@ namespace PB503Project.Models
 		public Loan Loan { get; set; }
 
 		public Book Book { get; set; }
-
-
 	}
 }
 

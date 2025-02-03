@@ -36,7 +36,7 @@ namespace PB503Project.Services.Impelementations
         public List<GetAllBooksDTO> GetAll()
         {
             var book = _bookRepocitory.GetAll();
-            if (book is null)
+            if (book.Any())
             {
                 throw new InvalidInputException("There is no Book!");
             }

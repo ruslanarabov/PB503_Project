@@ -21,7 +21,7 @@ namespace PB503Project.Services.Impelementations
 
         public void Add(CreateBorrowDTO createBorrowDTO)
         {
-            var borrower = new Borrower { Name = createBorrowDTO.Name };
+            var borrower = new Borrower { Name = createBorrowDTO.Name, Email = createBorrowDTO.Email };
             _borrowerRepocitory.Add(borrower);
             _borrowerRepocitory.Commit();
         }
@@ -29,7 +29,7 @@ namespace PB503Project.Services.Impelementations
         public List<GetAllBorrowerDTO> GetAll()
         {
             var borrower = _borrowerRepocitory.GetAll();
-            if (borrower is null)
+            if (!borrower.Any())
             {
                 throw new InvalidInputException("There is no borrower!");
             }
@@ -61,6 +61,7 @@ namespace PB503Project.Services.Impelementations
                 throw new InvalidIdException("Borrower ID not found to update!");
             }
             borrower.Name = updateBorrowerDTO.Name;
+            borrower.Email = updateBorrowerDTO.Email;
             _borrowerRepocitory.Commit();
         }
     }
