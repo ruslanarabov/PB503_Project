@@ -16,7 +16,11 @@ namespace PB503Project
 
 		public LoanItem LoanItem { get; set; }
 
+		public DateTime CreateTime { get; set; }
 
+		public DateTime UpdateTime { get; set; }
 	}
 }
+
+
 

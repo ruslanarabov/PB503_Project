@@ -21,12 +21,14 @@ namespace PB503Project.Services.Impelementations
 
         public void Add(CreateBookDTO createBookDTO)
         {
+            if (string.IsNullOrWhiteSpace(createBookDTO.Title)) throw new InvalidInputException("Book name cannot be empty.");
             var authors = _authorRepocitory.GetAll().Where(a => createBookDTO.AuthorsId.Contains(a.Id)).ToList();
             var book = new Book
             {
                 Title = createBookDTO.Title,
                 Desc = createBookDTO.Description,
                 PublishYear = createBookDTO.PublishYear,
+                CreateTime = DateTime.UtcNow.AddHours(4),
                 Authors = authors
             };
             _bookRepocitory.Add(book);
@@ -65,7 +67,7 @@ namespace PB503Project.Services.Impelementations
         public void Update(int Id, UpdateBookDTO updateBookDTO)
         {
             var book = _bookRepocitory.GetAll().FirstOrDefault(b => b.Id == Id);
-            if (book is null)
+            if (book is null || string.IsNullOrWhiteSpace(book.Title))
             {
                 throw new InvalidIdException("Id not found to update!");
             }
@@ -79,6 +81,8 @@ namespace PB503Project.Services.Impelementations
             book.Authors = authors;
 
             book.PublishYear = updateBookDTO.PublishYear;
+
+            book.UpdateTime = DateTime.UtcNow.AddHours(4);
 
             _bookRepocitory.Commit();
         }

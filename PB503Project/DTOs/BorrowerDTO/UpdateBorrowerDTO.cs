@@ -6,7 +6,10 @@ namespace PB503Project.DTOs.BorrowerDTO
         public string Name { get; set; }
 
         public string Email { get; set; }
+
+        public DateTime UpdatedDate { get; set; }
     }
 }
+
 
 

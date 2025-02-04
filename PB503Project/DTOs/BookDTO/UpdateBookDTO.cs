@@ -10,6 +10,9 @@ namespace PB503Project.DTOs.BookDTO
 		public int PublishYear { get; set; }
 
 		public List<int> AuthorsId { get; set; }
+
+		public DateTime UpdatedDate { get; set; }
 	}
 }
+
 

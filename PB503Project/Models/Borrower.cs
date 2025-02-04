@@ -9,7 +9,8 @@ namespace PB503Project.Models
 
 		public List<Loan> Loans { get; set; }
 
-
+		public DateTime UpdateTime { get; set; }
 	}
 }
+
 

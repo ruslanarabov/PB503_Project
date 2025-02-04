@@ -21,6 +21,7 @@ namespace PB503Project.Services.Impelementations
 
         public void Add(CreateBorrowDTO createBorrowDTO)
         {
+            if (string.IsNullOrWhiteSpace(createBorrowDTO.Name)) throw new InvalidInputException("Borrower name cannot be empty.");
             var borrower = new Borrower { Name = createBorrowDTO.Name, Email = createBorrowDTO.Email };
             _borrowerRepocitory.Add(borrower);
             _borrowerRepocitory.Commit();
@@ -56,12 +57,13 @@ namespace PB503Project.Services.Impelementations
         public void Update(int Id, UpdateBorrowerDTO updateBorrowerDTO)
         {
             var borrower = _borrowerRepocitory.GetAll().FirstOrDefault(b => b.Id == Id);
-            if (borrower is null)
+            if (borrower is null || string.IsNullOrWhiteSpace(borrower.Name))
             {
                 throw new InvalidIdException("Borrower ID not found to update!");
             }
             borrower.Name = updateBorrowerDTO.Name;
             borrower.Email = updateBorrowerDTO.Email;
+            borrower.UpdateTime = DateTime.UtcNow.AddHours(4);
             _borrowerRepocitory.Commit();
         }
     }
