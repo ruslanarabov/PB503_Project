@@ -22,7 +22,7 @@ namespace PB503Project.Services.Impelementations
             if (string.IsNullOrWhiteSpace(createAuthorDTO.Name)) throw new InvalidInputException("Author name cannot be empty.");
             var author = new Author
             {   Name = createAuthorDTO.Name,
-                CreateTime = DateTime.UtcNow.AddHours(4),
+                CreateAt = DateTime.UtcNow.AddHours(4),
                 Books = new List<Book>()
             };
             _authorRepocitory.Add(author);
@@ -65,7 +65,7 @@ namespace PB503Project.Services.Impelementations
                 throw new InvalidIdException("Author ID not found to update!");
             }
             author.Name = updateAuthorDTO.Name;
-            author.UpdateTime = DateTime.UtcNow.AddHours(4);
+            author.UpdateAt = DateTime.UtcNow.AddHours(4);
             _authorRepocitory.Commit();
         }
     }

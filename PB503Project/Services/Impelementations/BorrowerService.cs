@@ -63,7 +63,7 @@ namespace PB503Project.Services.Impelementations
             }
             borrower.Name = updateBorrowerDTO.Name;
             borrower.Email = updateBorrowerDTO.Email;
-            borrower.UpdateTime = DateTime.UtcNow.AddHours(4);
+            borrower.UpdateAt = DateTime.UtcNow.AddHours(4);
             _borrowerRepocitory.Commit();
         }
     }

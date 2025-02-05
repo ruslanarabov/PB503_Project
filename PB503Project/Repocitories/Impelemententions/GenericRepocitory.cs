@@ -10,6 +10,11 @@ namespace PB503Project.Repocitories.Impelemententions
     {
         private readonly AppDbContext _appDbContext;
 
+        public GenericRepository()
+        {
+            _appDbContext = new AppDbContext();
+        }
+
         public void Add(T entity)
         {
             _appDbContext.Set<T>().Add(entity);

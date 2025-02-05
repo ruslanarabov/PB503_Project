@@ -43,12 +43,12 @@ namespace PB503Project.Services.Impelementations
             {
                 throw new InvalidInputException("There is no loan books!");
             }
-            return loans.Select(loan => new GetAllLoanDTO
+            return loans.Select(loans => new GetAllLoanDTO
             {
-                BorrowerId = loan.BorrowId,
-                LoanDate = loan.LoanDate,
-                MustReturnDate = loan.MustReturnDate,
-                BookTitles = loan.LoanItems.Select(item => item.Book.Title).ToList()
+                BorrowerId = loans.BorrowId,
+                LoanDate = loans.LoanDate,
+                MustReturnDate = loans.MustReturnDate,
+                BookTitles = loans.LoanItems.Select(item => item.Book.Title).ToList()
             }).ToList();
         }
 

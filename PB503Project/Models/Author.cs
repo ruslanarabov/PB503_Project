@@ -6,11 +6,7 @@ namespace PB503Project.Models
 
         public string Name { get; set; } 
 
-        public List<Book> Books { get; set; }
-
-        public DateTime CreateTime { get; set; }
-
-        public DateTime UpdateTime { get; set; }
+        public List<Book> Books { get; set; }   
     }
 
 }

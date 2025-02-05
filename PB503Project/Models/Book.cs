@@ -14,11 +14,7 @@ namespace PB503Project
 
 		public List<Author> Authors { get; set; }
 
-		public LoanItem LoanItem { get; set; }
-
-		public DateTime CreateTime { get; set; }
-
-		public DateTime UpdateTime { get; set; }
+		public LoanItem LoanItem { get; set; }		
 	}
 }
 

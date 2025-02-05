@@ -7,9 +7,7 @@ namespace PB503Project.Models
 
 		public string Email { get; set; } 
 
-		public List<Loan> Loans { get; set; }
-
-		public DateTime UpdateTime { get; set; }
+		public List<Loan> Loans { get; set; }	
 	}
 }
 
