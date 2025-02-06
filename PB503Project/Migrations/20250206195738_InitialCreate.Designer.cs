@@ -12,8 +12,8 @@ using PB503Project.Data;
 namespace PB503Project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250201125756_InitialMig")]
-    partial class InitialMig
+    [Migration("20250206195738_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -140,7 +140,7 @@ namespace PB503Project.Migrations
                     b.Property<int>("BorrowId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BorrowerId")
+                    b.Property<int>("BorrowerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreateAt")
@@ -193,7 +193,8 @@ namespace PB503Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("BookId")
+                        .IsUnique();
 
                     b.HasIndex("LoanId");
 
@@ -217,16 +218,20 @@ namespace PB503Project.Migrations
 
             modelBuilder.Entity("PB503Project.Models.Loan", b =>
                 {
-                    b.HasOne("PB503Project.Models.Borrower", null)
+                    b.HasOne("PB503Project.Models.Borrower", "Borrower")
                         .WithMany("Loans")
-                        .HasForeignKey("BorrowerId");
+                        .HasForeignKey("BorrowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Borrower");
                 });
 
             modelBuilder.Entity("PB503Project.Models.LoanItem", b =>
                 {
                     b.HasOne("PB503Project.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
+                        .WithOne("LoanItem")
+                        .HasForeignKey("PB503Project.Models.LoanItem", "BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -239,6 +244,12 @@ namespace PB503Project.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("Loan");
+                });
+
+            modelBuilder.Entity("PB503Project.Book", b =>
+                {
+                    b.Navigation("LoanItem")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PB503Project.Models.Borrower", b =>

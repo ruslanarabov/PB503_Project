@@ -41,7 +41,7 @@ namespace PB503Project.Services.Impelementations
                 Desc = createBookDTO.Description,
                 PublishYear = createBookDTO.PublishYear,
                 CreateAt = DateTime.UtcNow.AddHours(4),
-                Authors = authors
+                Authors = new List<Author>()
             };
             _bookRepocitory.Add(book);
             _bookRepocitory.Commit();
@@ -50,7 +50,7 @@ namespace PB503Project.Services.Impelementations
         public List<GetAllBooksDTO> GetAll()
         {
             var book = _bookRepocitory.GetAll();
-            if (book.Any())
+            if (!book.Any())
             {
                 throw new InvalidInputException("There is no Book!");
             }
@@ -60,7 +60,7 @@ namespace PB503Project.Services.Impelementations
                 Title = book.Title,
                 Descriptions = book.Desc,
                 PublishYear = book.PublishYear,
-                Authors = book.Authors.Select(a => a.Name).ToList(),
+                Authors = book.Authors != null ? book.Authors.Select(a => a.Name).ToList() : new List<string>(),
                 IsBorow = book.LoanItem != null
             }).ToList();
         }

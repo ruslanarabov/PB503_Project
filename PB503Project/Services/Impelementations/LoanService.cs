@@ -12,10 +12,14 @@ namespace PB503Project.Services.Impelementations
     public class LoanService : ILoanService
     {
         private readonly ILoanRepocitory _loanRepocitory;
+        private readonly IBorrowerRepocitory _borrowerRepocitory;
+        private readonly IBookRepocitory _bookRepocitory;
 
         public LoanService()
         {
             _loanRepocitory = new LoanRepocitory();
+            _borrowerRepocitory = new BorrowerRepocitory();
+            _bookRepocitory = new BookRepocitory();
         }
 
         public void Add(CreateLoanDTO createLoanDTO)
@@ -33,6 +37,22 @@ namespace PB503Project.Services.Impelementations
 
             _loanRepocitory.Add(loans);
             _loanRepocitory.Commit();
+        }
+
+        public void BorrowBook(int borrowerId, int bookId)
+        {
+            var borrower = _borrowerRepocitory.GetById(borrowerId);
+            if (borrower == null)
+            {
+                throw new InvalidIdException("Borrower not found!");
+            }
+            var book = _bookRepocitory.GetById(bookId);
+            if (book == null)
+            {
+                throw new InvalidIdException("Book not found!");
+            }
+
+            //var existingLoan = _loanRepocitory.GetAll().FirstOrDefault(l => l.BorrowId == borrowerId, );
         }
 
         public List<GetAllLoanDTO> GetAll()

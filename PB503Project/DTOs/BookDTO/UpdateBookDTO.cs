@@ -11,7 +11,7 @@ namespace PB503Project.DTOs.BookDTO
 
 		public List<int> AuthorsId { get; set; }
 
-		public DateTime UpdatedDate { get; set; }
+		
 	}
 }
 

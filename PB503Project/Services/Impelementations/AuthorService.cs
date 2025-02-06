@@ -33,7 +33,7 @@ namespace PB503Project.Services.Impelementations
         public List<GetAllAuthorsDTO> GetAll()
         {
             var author = _authorRepocitory.GetAll();
-            if (author.Any())
+            if (!author.Any())
             {
                 throw new InvalidInputException("There is no Author!");
             }
@@ -41,7 +41,8 @@ namespace PB503Project.Services.Impelementations
             {
                 Id = author.Id,
                 Name = author.Name,
-                BookTitles = author.Books.Select(b => b.Title).ToList()
+                BookTitles = author.Books != null ? author.Books.Select(b => b.Title).ToList() : new List<string>()
+
             }).ToList();
 
         }

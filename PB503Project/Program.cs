@@ -3,12 +3,13 @@
 using PB503Project;
 using PB503Project.DTOs.AuthorDTO;
 using PB503Project.DTOs.BookDTO;
+using PB503Project.DTOs.BorrowerDTO;
 using PB503Project.Services.Impelementations;
 using PB503Project.Services.Interfaces;
 
 IBookService bookService = new BookService();
 IAuthorService authorService = new AuthorService();
-IBorrowedService borrowedService = new BorrowerService();
+IBorrowedService borrowerService = new BorrowerService();
 ILoanService loanService = new LoanService();
 
 while (true)
@@ -33,8 +34,8 @@ while (true)
     {
         case "1": AuthorActions(authorService); break;
         case "2": BookActions(bookService); break;
-        //case "3": BorrowerActions(borrowerService); break;
-        //case "4": BorrowBook(loanService, bookService, borrowerService); break;
+        case "3": BorrowerActions(borrowerService); break;
+        case "4": BorrowBook(loanService, bookService, borrowerService); break;
         //case "5": ReturnBook(loanService); break;
         //case "6": GetMostBorrowedBook(loanService); break;
         //case "7": GetOverdueBorrowers(loanService); break;
@@ -78,7 +79,12 @@ static void AuthorActions(IAuthorService authorService)
             break;
         case "3":
             Console.Write("Enter author ID to update: ");
-            int id = int.Parse(Console.ReadLine());
+            int uptdAuthorId;
+            while (!int.TryParse(Console.ReadLine(), out uptdAuthorId))
+            {
+                Console.WriteLine("Invalid input! Please enter a valid Author ID:");
+            }
+            
             Console.Write("Enter new name: ");
             string newName = Console.ReadLine();
             if(newName.Any(char.IsDigit))
@@ -87,13 +93,21 @@ static void AuthorActions(IAuthorService authorService)
             }
             else
             {
-                authorService.Update(id, new UpdateAuthorDTO { Name = Console.ReadLine() });
+                authorService.Update(uptdAuthorId, new UpdateAuthorDTO
+                {
+                    Name = Console.ReadLine()
+                });
                 Console.WriteLine("Author updated succesfully!");
             }
             break;
         case "4":
             Console.Write("Enter author ID to delete: ");
-            authorService.Remove(int.Parse(Console.ReadLine()));
+            int deleteAuthorId;
+            while (!int.TryParse(Console.ReadLine(), out deleteAuthorId))
+            {
+                Console.WriteLine("Invalid input! Please enter a valid Author ID:");
+            }
+            authorService.Remove(deleteAuthorId);
             Console.WriteLine("Author deleted succesfully!");
             break;
         case "0": return;
@@ -101,66 +115,6 @@ static void AuthorActions(IAuthorService authorService)
     }
 }
 
-//static void BookActions(IBookService bookService)
-//{
-//    Console.Clear();
-//    Console.WriteLine("1 - List Books");
-//    Console.WriteLine("2 - Create Book");
-//    Console.WriteLine("3 - Edit Book");
-//    Console.WriteLine("4 - Delete Book");
-//    Console.WriteLine("0 - Exit");
-
-//    string choice = Console.ReadLine();
-//    switch(choice)
-//    {
-//        case "1":
-//            var books = bookService.GetAll();
-//            if(books.Count == 0)
-//            {
-//                Console.WriteLine("There is no books");
-//            }
-//            else
-//            {
-//                books.ForEach(book => Console.WriteLine($"{book.Id} - {book.Title} - {book.PublishYear} - {book.Authors}"));
-//            }
-//            break;
-//        case "2":
-
-//            Console.WriteLine("Enter book name: ");
-//            string title = Console.ReadLine();
-//            Console.WriteLine("Enter book description: ");
-//            string desc = Console.ReadLine();
-//            Console.WriteLine("Enter publish year: ");
-//            int publishYear = int.Parse(Console.ReadLine());
-//            Console.WriteLine("Enter Author's ID: ");
-//            int authorId = int.Parse(Console.ReadLine());
-
-//            bookService.Add(new CreateBookDTO {  Title = title, Description = desc, PublishYear = publishYear, AuthorsId = authorId, });
-//            Console.WriteLine("Book added succesfully!");
-//            break;
-//        case "3":
-//            Console.Write("Enter book ID to update: ");
-//            int bookId = int.Parse(Console.ReadLine());
-//            Console.Write("Enter new title: ");
-//            string newTitle = Console.ReadLine();
-//            Console.WriteLine("Enter new description: ");
-//            string newDesc = Console.ReadLine();
-//            Console.WriteLine("Enter new publish year: ");
-//            int newPublishYear = int.Parse(Console.ReadLine());
-//            bookService.Update(bookId, new UpdateBookDTO { Title = newTitle, Descriptions = newDesc, PublishYear = newPublishYear });
-
-//            Console.WriteLine("Book updated succesfully!");
-//            break;
-//        case "4":
-//            Console.WriteLine("Enter Book Id to delete: ");
-//            bookService.Remove(int.Parse( Console.ReadLine() ));
-//            Console.WriteLine("Book deleted succesfully!");
-//            break;
-//        case "0": return;
-//        default: Console.WriteLine("Invalid option"); break;
-//    }
-
-//}
 
 
 static void BookActions(IBookService bookService)
@@ -179,17 +133,11 @@ static void BookActions(IBookService bookService)
             var books = bookService.GetAll();
             if (books.Count == 0)
             {
-                Console.WriteLine("There are no books.");
+                Console.WriteLine("There is no books");
             }
             else
             {
-                books.ForEach(book =>
-                {
-                    string authorNames = book.Authors != null && book.Authors.Count > 0? string.Join(", ", book.Authors.Select(a => a.))
-                        : "No Authors";
-
-                    Console.WriteLine($"{book.Id} - {book.Title} - {book.PublishYear} - {authorNames}");
-                });
+                books.ForEach(book => Console.WriteLine($"{book.Id} - {book.Title} - {book.PublishYear} - {book.Authors}"));
             }
             break;
 
@@ -205,7 +153,7 @@ static void BookActions(IBookService bookService)
                 Console.WriteLine("Invalid input! Please enter a valid year:");
             }
 
-            Console.WriteLine("Enter Author IDs (comma-separated): ");
+            Console.WriteLine("Enter Author IDs: ");
             string authorsInput = Console.ReadLine();
 
             List<int> authorIds = authorsInput.Split(',')
@@ -245,7 +193,7 @@ static void BookActions(IBookService bookService)
             int newPublishYear;
             while (!int.TryParse(Console.ReadLine(), out newPublishYear))
             {
-                Console.WriteLine("Invalid input! Please enter a valid year:");
+                Console.WriteLine("Invalid input! Please enter a valid year:");            //BOS BOSUNA YAZDIGIM KOD ISLEMIR BU (isledi 100 dene sey deyisennen sora(supheli) )
             }
 
             bookService.Update(bookId, new UpdateBookDTO
@@ -277,3 +225,115 @@ static void BookActions(IBookService bookService)
             break;
     }
 }
+
+
+static void BorrowerActions(IBorrowedService borrowerService)
+{
+    Console.Clear();
+    Console.WriteLine("1 - List Borrower");
+    Console.WriteLine("2 - Create Borrower");
+    Console.WriteLine("3 - Edit Borrower");
+    Console.WriteLine("4 - Delete Borrower");
+    Console.WriteLine("0 - Exit");
+    string choice = Console.ReadLine();
+    switch (choice)
+    {
+        case "1":
+            var borrowers = borrowerService.GetAll();
+            if (borrowers.Count == 0)
+            {
+                Console.WriteLine("There is no borrower!");
+            }
+            else
+            {
+                borrowers.ForEach(borrower => Console.WriteLine($"Borrwer Id: {borrower.Id} - Borrower Name: {borrower.Name} - Borrower e-mail: {borrower.Email}"));
+            }
+            break;
+        case "2":
+            Console.WriteLine("Enter borrower name: ");
+            string borrowerName = Console.ReadLine();
+            if(borrowerName.Any(char.IsDigit))
+            {
+                Console.WriteLine("Borrower name cannot contain number.");
+            }
+            else
+            {
+                borrowerService.Add(new CreateBorrowDTO { Name = Console.ReadLine() } );
+                Console.WriteLine("Borrower name succesfully created!");
+            }
+
+            Console.WriteLine("Enter Borrower e-mail: ");
+            string borrowerEmail = Console.ReadLine();
+            borrowerService.Add(new CreateBorrowDTO { Email = Console.ReadLine() });
+            Console.WriteLine("Borrower e-mail succesfully created!");
+            break;
+
+        case "3":
+            Console.Write("Enter borrower ID to update: ");
+            int uptdBorrowerId;
+            while (!int.TryParse(Console.ReadLine(), out uptdBorrowerId))
+            {
+                Console.WriteLine("Invalid input! Please enter a valid Borrower ID: ");
+            }
+            Console.WriteLine("Enter new name: ");
+            string newBorrowerName = Console.ReadLine();
+            if (newBorrowerName.Any(char.IsDigit))
+            {
+                Console.WriteLine("Borrower name cannot contain number.");
+            }
+            Console.WriteLine("Enter new E-mail: ");
+            string newBorrowerEmail = Console.ReadLine();
+
+            borrowerService.Update(uptdBorrowerId, new UpdateBorrowerDTO
+            {
+                Name = newBorrowerName,
+                Email = newBorrowerEmail
+            });
+
+            Console.WriteLine("Borrower name and e-mail updated succesfully!");
+            break;
+        case "4":
+            Console.WriteLine("Enter Borrower Id to delete: ");
+            int deleteBorrower;
+            while (!int.TryParse(Console.ReadLine(), out deleteBorrower))
+            {
+                Console.WriteLine("Invalid input! Please enter a valid Borrower ID:");
+            }
+
+            borrowerService.Remove(deleteBorrower);
+            Console.WriteLine("Borrower deleted succesfully!");
+            break;
+
+        case "0":
+            return;
+
+        default:
+            Console.WriteLine("Invalid option");
+            break;
+    }
+
+}
+
+
+static void BorrowBook(ILoanService loanService, IBookService bookService, IBorrowedService borrowerService)
+{
+    Console.Clear();
+    Console.WriteLine("Borrow a Book");
+    Console.Write("Enter Borrower ID: ");
+    int borrowerId = int.Parse(Console.ReadLine());
+    Console.Write("Enter Book ID: ");
+    int bookId = int.Parse(Console.ReadLine());
+
+    try
+    {
+        loanService.BorrowBook(borrowerId, bookId);
+        Console.WriteLine("Book borrowed successfully!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+}
+
+
+

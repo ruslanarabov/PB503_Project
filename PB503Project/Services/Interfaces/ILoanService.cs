@@ -12,6 +12,8 @@ namespace PB503Project.Services.Interfaces
 		void Update(int Id, UpdateLoanDTO updateLoanDTO);
 
 		List<GetAllLoanDTO> GetAll();
-	}
+
+        void BorrowBook(int borrowerId, int bookId);
+    }
 }
 

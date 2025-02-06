@@ -21,8 +21,18 @@ namespace PB503Project.Services.Impelementations
 
         public void Add(CreateBorrowDTO createBorrowDTO)
         {
-            if (string.IsNullOrWhiteSpace(createBorrowDTO.Name)) throw new InvalidInputException("Borrower name cannot be empty.");
-            var borrower = new Borrower { Name = createBorrowDTO.Name, Email = createBorrowDTO.Email };
+            if (string.IsNullOrWhiteSpace(createBorrowDTO.Name))
+                throw new InvalidInputException("Borrower name cannot be empty.");
+
+            if (string.IsNullOrWhiteSpace(createBorrowDTO.Email))
+                throw new InvalidInputException("Email cannot be empty.");
+
+            var borrower = new Borrower
+            {
+                Name = createBorrowDTO.Name,
+                Email = createBorrowDTO.Email
+            };
+
             _borrowerRepocitory.Add(borrower);
             _borrowerRepocitory.Commit();
         }
