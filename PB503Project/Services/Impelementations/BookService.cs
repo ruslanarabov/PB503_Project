@@ -43,6 +43,7 @@ namespace PB503Project.Services.Impelementations
                 CreateAt = DateTime.UtcNow.AddHours(4),
                 Authors = new List<Author>()
             };
+
             _bookRepocitory.Add(book);
             _bookRepocitory.Commit();
         }

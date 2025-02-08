@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PB503Project.Data;
 
@@ -11,9 +12,11 @@ using PB503Project.Data;
 namespace PB503Project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250207194743_AddBookAuthorsTable")]
+    partial class AddBookAuthorsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,17 +27,17 @@ namespace PB503Project.Migrations
 
             modelBuilder.Entity("AuthorBook", b =>
                 {
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("AuthorsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BookId")
+                    b.Property<int>("BooksId")
                         .HasColumnType("int");
 
-                    b.HasKey("AuthorId", "BookId");
+                    b.HasKey("AuthorsId", "BooksId");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("BooksId");
 
-                    b.ToTable("AuthorBook");
+                    b.ToTable("AuthorBook", (string)null);
                 });
 
             modelBuilder.Entity("PB503Project.Book", b =>
@@ -208,13 +211,13 @@ namespace PB503Project.Migrations
                 {
                     b.HasOne("PB503Project.Models.Author", null)
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("AuthorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("PB503Project.Book", null)
                         .WithMany()
-                        .HasForeignKey("BookId")
+                        .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

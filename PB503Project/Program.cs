@@ -1,11 +1,14 @@
 ﻿
 
+using System.ComponentModel;
 using PB503Project;
+using PB503Project.AllExceptions;
 using PB503Project.DTOs.AuthorDTO;
 using PB503Project.DTOs.BookDTO;
 using PB503Project.DTOs.BorrowerDTO;
 using PB503Project.Services.Impelementations;
 using PB503Project.Services.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 IBookService bookService = new BookService();
 IAuthorService authorService = new AuthorService();
@@ -36,12 +39,12 @@ while (true)
         case "2": BookActions(bookService); break;
         case "3": BorrowerActions(borrowerService); break;
         case "4": BorrowBook(loanService, bookService, borrowerService); break;
-        //case "5": ReturnBook(loanService); break;
-        //case "6": GetMostBorrowedBook(loanService); break;
-        //case "7": GetOverdueBorrowers(loanService); break;
-        //case "8": GetBorrowerHistory(loanService); break;
-        //case "9": FilterBooksByTitle(bookService); break;
-        //case "10": FilterBooksByAuthor(bookService); break;
+        case "5": ReturnBook(loanService); break;
+        case "6": GetMostBorrowedBook(loanService); break;
+        case "7": GetOverdueBorrowers(loanService); break;
+        case "8": GetBorrowerHistory(loanService); break;
+        case "9": FilterBooksByTitle(bookService); break;
+        case "10": FilterBooksByAuthor(bookService); break;
         case "0": return;
         default: Console.WriteLine("Invalid option, try again."); break;
     }
@@ -87,17 +90,18 @@ static void AuthorActions(IAuthorService authorService)
             
             Console.Write("Enter new name: ");
             string newName = Console.ReadLine();
-            if(newName.Any(char.IsDigit))
+            if(newName.Any(char.IsDigit) || string.IsNullOrWhiteSpace(newName))
             {
                 Console.WriteLine("Author name cannot contain number.");
             }
-            else
+            try
             {
-                authorService.Update(uptdAuthorId, new UpdateAuthorDTO
-                {
-                    Name = Console.ReadLine()
-                });
+                authorService.Update(uptdAuthorId, new UpdateAuthorDTO { Name = newName});
                 Console.WriteLine("Author updated succesfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
             break;
         case "4":
@@ -107,8 +111,15 @@ static void AuthorActions(IAuthorService authorService)
             {
                 Console.WriteLine("Invalid input! Please enter a valid Author ID:");
             }
-            authorService.Remove(deleteAuthorId);
-            Console.WriteLine("Author deleted succesfully!");
+            try
+            {
+                authorService.Remove(deleteAuthorId);
+                Console.WriteLine("Author deleted succesfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
             break;
         case "0": return;
         default: Console.WriteLine("Invalid option"); break;
@@ -133,11 +144,15 @@ static void BookActions(IBookService bookService)
             var books = bookService.GetAll();
             if (books.Count == 0)
             {
-                Console.WriteLine("There is no books");
+                throw new InvalidInputException("There is no book!");
             }
             else
             {
-                books.ForEach(book => Console.WriteLine($"{book.Id} - {book.Title} - {book.PublishYear} - {book.Authors}"));
+                books.ForEach(book =>
+                {
+                    string authorNames = book.Authors != null ? string.Join(", ", book.Authors) : "No Author";
+                    Console.WriteLine($"{book.Id} - {book.Title} - {book.Descriptions} - {book.PublishYear} - Authors: {authorNames}");
+                });
             }
             break;
 
@@ -193,17 +208,23 @@ static void BookActions(IBookService bookService)
             int newPublishYear;
             while (!int.TryParse(Console.ReadLine(), out newPublishYear))
             {
-                Console.WriteLine("Invalid input! Please enter a valid year:");            //BOS BOSUNA YAZDIGIM KOD ISLEMIR BU (isledi 100 dene sey deyisennen sora(supheli) )
+                Console.WriteLine("Invalid input! Please enter a valid year:");
             }
-
-            bookService.Update(bookId, new UpdateBookDTO
+            try
             {
-                Title = newTitle,
-                Descriptions = newDesc,
-                PublishYear = newPublishYear
-            });
+                bookService.Update(bookId, new UpdateBookDTO
+                {
+                    Title = newTitle,
+                    Descriptions = newDesc,
+                    PublishYear = newPublishYear
+                });
 
-            Console.WriteLine("Book updated successfully!");
+                Console.WriteLine("Book name, Desc and Publish Year updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
             break;
 
         case "4":
@@ -213,9 +234,16 @@ static void BookActions(IBookService bookService)
             {
                 Console.WriteLine("Invalid input! Please enter a valid Book ID:");
             }
-            bookService.Remove(deleteBookId);
-            Console.WriteLine("Book deleted successfully!");
-            break;
+            try
+            {
+                bookService.Remove(deleteBookId);
+                Console.WriteLine("Book deleted succesfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+            break; ;
 
         case "0":
             return;
@@ -250,23 +278,30 @@ static void BorrowerActions(IBorrowedService borrowerService)
             }
             break;
         case "2":
-            Console.WriteLine("Enter borrower name: ");
-            string borrowerName = Console.ReadLine();
-            if(borrowerName.Any(char.IsDigit))
+            Console.Write("Enter borrower name: ");
+            string borrowerName = Console.ReadLine()?.Trim();            
+            if (string.IsNullOrWhiteSpace(borrowerName) || borrowerName.Any(char.IsDigit))
             {
-                Console.WriteLine("Borrower name cannot contain number.");
-            }
-            else
-            {
-                borrowerService.Add(new CreateBorrowDTO { Name = Console.ReadLine() } );
-                Console.WriteLine("Borrower name succesfully created!");
+                Console.WriteLine("Borrower name cannot be empty or contain numbers.");
+                return;
             }
 
-            Console.WriteLine("Enter Borrower e-mail: ");
-            string borrowerEmail = Console.ReadLine();
-            borrowerService.Add(new CreateBorrowDTO { Email = Console.ReadLine() });
-            Console.WriteLine("Borrower e-mail succesfully created!");
+            Console.Write("Enter borrower e-mail: ");
+            string borrowerEmail = Console.ReadLine()?.Trim();          
+            if (string.IsNullOrWhiteSpace(borrowerEmail))
+            {
+                Console.WriteLine("Borrower email cannot be empty.");
+                return;
+            }         
+            borrowerService.Add(new CreateBorrowDTO
+            {
+                Name = borrowerName,
+                Email = borrowerEmail
+            });
+
+            Console.WriteLine("Borrower successfully created!");
             break;
+
 
         case "3":
             Console.Write("Enter borrower ID to update: ");
@@ -274,23 +309,31 @@ static void BorrowerActions(IBorrowedService borrowerService)
             while (!int.TryParse(Console.ReadLine(), out uptdBorrowerId))
             {
                 Console.WriteLine("Invalid input! Please enter a valid Borrower ID: ");
+               
             }
             Console.WriteLine("Enter new name: ");
             string newBorrowerName = Console.ReadLine();
             if (newBorrowerName.Any(char.IsDigit))
             {
                 Console.WriteLine("Borrower name cannot contain number.");
+                break;
             }
             Console.WriteLine("Enter new E-mail: ");
             string newBorrowerEmail = Console.ReadLine();
-
-            borrowerService.Update(uptdBorrowerId, new UpdateBorrowerDTO
+            try
             {
-                Name = newBorrowerName,
-                Email = newBorrowerEmail
-            });
+                borrowerService.Update(uptdBorrowerId, new UpdateBorrowerDTO
+                {
+                    Name = newBorrowerName,
+                    Email = newBorrowerEmail
+                });
 
-            Console.WriteLine("Borrower name and e-mail updated succesfully!");
+                Console.WriteLine("Borrower name and e-mail updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
             break;
         case "4":
             Console.WriteLine("Enter Borrower Id to delete: ");
@@ -299,10 +342,16 @@ static void BorrowerActions(IBorrowedService borrowerService)
             {
                 Console.WriteLine("Invalid input! Please enter a valid Borrower ID:");
             }
-
-            borrowerService.Remove(deleteBorrower);
-            Console.WriteLine("Borrower deleted succesfully!");
-            break;
+            try
+            {
+                borrowerService.Remove(deleteBorrower);
+                Console.WriteLine("Borrower deleted succesfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+            break; 
 
         case "0":
             return;
@@ -332,6 +381,134 @@ static void BorrowBook(ILoanService loanService, IBookService bookService, IBorr
     catch (Exception ex)
     {
         Console.WriteLine($"Error: {ex.Message}");
+    }
+}
+
+
+
+static void FilterBooksByTitle(IBookService bookService)
+{
+    Console.Clear();
+    Console.Write("Search by title: ");
+    var keyWord = Console.ReadLine();
+
+    if (string.IsNullOrWhiteSpace(keyWord) || keyWord.Any(char.IsDigit))
+    {
+        Console.WriteLine("Search keyword cannot be empty or contains number, Please try again.");
+        return;
+    }
+
+    var datas = bookService.GetAll()
+                           .Where(b => b.Title.Trim().ToLower()
+                           .Contains(keyWord.Trim().ToLower()))
+                           .ToList();
+
+    if (datas.Count == 0)
+    {
+        Console.WriteLine("Book not found.");
+        return;
+    }
+
+    Console.Clear();
+    foreach (var data in datas)
+    {
+        Console.WriteLine($"{data.Id} - {data.Title} - {data.PublishYear} - {string.Join(", ", data.Authors)}");
+    }
+}
+
+static void ReturnBook(ILoanService loanService)
+{
+    Console.Clear();
+    Console.Write("Enter Loan ID: ");
+    int loanId = int.Parse(Console.ReadLine());
+    loanService.ReturnBook(loanId);
+    Console.WriteLine("Book returned successfully.");
+}
+
+static void GetMostBorrowedBook(ILoanService loanService)
+{
+    var book = loanService.GetMostBorrowedBook();
+
+    Console.WriteLine($"Most borrowed book: {book.Title} - Borrowed {book.LoanItem} times");
+}
+
+static void GetOverdueBorrowers(ILoanService loanService)
+{
+    var overdueBorrowers = loanService.GetOverdueBorrowers();
+    Console.WriteLine("Overdue Borrowers:");
+    overdueBorrowers.ForEach(b => Console.WriteLine($"{b.Id} - {b.Name}"));
+}
+
+static void GetBorrowerHistory(ILoanService loanService)
+{
+    Console.Clear();
+    Console.Write("Enter Borrower ID: ");
+    int borrowerId = int.Parse(Console.ReadLine());
+    var history = loanService.GetBorrowerHistory(borrowerId);
+    Console.WriteLine("Borrower History:");
+    history.ForEach(h => Console.WriteLine($"Book: {h.BookTitle}, Borrowed On: {h.BorrowDate}, Returned On: {h.ReturnDate}"));
+}
+
+//static void FilterBooksByAuthor(IBookService bookService)
+//{
+//    Console.Clear();
+//    Console.Write("Search by author name: ");
+//    var keyWord = Console.ReadLine();
+
+//    while (string.IsNullOrWhiteSpace(keyWord) || keyWord.Any(char.IsDigit))
+//    {
+//        Console.WriteLine("Author name cannot be empty or contains number please try again.");
+//    }
+
+//    var books = bookService.GetAll()
+//                       .Where(b => b.Authors.Any(a => a.Trim().ToLower()
+//                       .Contains(keyWord.Trim().ToLower())))
+//                       .ToList();
+
+
+//    if (books.Count == 0)
+//    {
+//        Console.WriteLine("No books found for this author.");
+//        return;
+//    }
+
+//    Console.Clear();
+//    foreach (var book in books)
+//    {
+//        Console.WriteLine($"{book.Id} - {book.Title} - {book.PublishYear} - {string.Join(", ", book.Authors.Select(a => a.Name))}");
+//    }
+//}
+
+
+
+static void FilterBooksByAuthor(IBookService bookService)
+{
+    Console.Clear();
+    Console.Write("Search by author name: ");
+    var keyWord = Console.ReadLine();
+
+    if (string.IsNullOrWhiteSpace(keyWord) || keyWord.Any(char.IsDigit))
+    {
+        Console.WriteLine("Author name cannot be empty or contain numbers. Please try again.");
+        return;
+    }
+
+    var books = bookService.GetAll()
+                       .Where(b => b.Authors.Any(a => a.Trim().ToLower()
+                       .Contains(keyWord.Trim().ToLower())))
+                       .ToList();
+
+    if (books.Count == 0)
+    {
+        Console.WriteLine("No books found for this author.");
+        return;
+    }
+
+    Console.Clear();
+    foreach (var book in books)
+    {
+
+        Console.WriteLine($"{book.Id} - {book.Title} - {book.PublishYear} - {string.Join(", ", book.Authors)}");
     }
 }
 

@@ -5,7 +5,7 @@ namespace PB503Project.DTOs.BookDTO
 	{
 		public int Id { get; set; }
 
-		public List<string> Authors { get; set; }
+		public List<string> Authors { get; set; } 
 
 		public bool IsBorow { get; set; }
 

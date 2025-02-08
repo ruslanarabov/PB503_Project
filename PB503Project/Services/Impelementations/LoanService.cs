@@ -1,5 +1,6 @@
 ﻿using System;
 using PB503Project.AllExceptions;
+using PB503Project.DTOs.BorrowerDTO;
 using PB503Project.DTOs.LoanDTO;
 using PB503Project.Models;
 using PB503Project.Repocitories.Impelemententions;
@@ -24,6 +25,11 @@ namespace PB503Project.Services.Impelementations
 
         public void Add(CreateLoanDTO createLoanDTO)
         {
+            var loan = new Loan { BorrowId = createLoanDTO.BorrowerId };
+            foreach (var bookId in createLoanDTO.BooksId)
+            {
+                loan.LoanItems.Add(new LoanItem { BookId = bookId });
+            }
             if (createLoanDTO == null) throw new InvalidInputException("Input cannot be null");
             if (createLoanDTO.LoanDate > DateTime.UtcNow.AddHours(4))
                 throw new InvalidInputException("Invalid loan date! You cannot borrow a book in the future.");
@@ -46,14 +52,39 @@ namespace PB503Project.Services.Impelementations
             {
                 throw new InvalidIdException("Borrower not found!");
             }
+
             var book = _bookRepocitory.GetById(bookId);
             if (book == null)
             {
                 throw new InvalidIdException("Book not found!");
             }
 
-            //var existingLoan = _loanRepocitory.GetAll().FirstOrDefault(l => l.BorrowId == borrowerId, );
+
+            var existingLoan = _loanRepocitory.GetAll()
+                .FirstOrDefault(l => l.BorrowId == borrowerId && l.BookId == bookId && l.ReturnTime == null);
+
+            if (existingLoan != null)
+            {
+                throw new InvalidOperationException("This book is already borrowed by this borrower and has't been returned.");
+            }
+
+
+            var newLoan = new Loan
+            {
+                BorrowId = borrowerId,
+                BookId = bookId,
+                BorrowDate = DateTime.UtcNow.AddHours(4),
+                ReturnTime = null
+            };
+
+            _loanRepocitory.Add(newLoan);
+            _loanRepocitory.Commit();
         }
+
+
+
+
+
 
         public List<GetAllLoanDTO> GetAll()
         {
@@ -90,6 +121,74 @@ namespace PB503Project.Services.Impelementations
             loans.ReturnTime = DateTime.UtcNow.AddHours(4);
             _loanRepocitory.Commit();
         }
+
+        public void ReturnBook(int loanId)
+        {
+            var loan = _loanRepocitory.GetById(loanId);
+            if (loan == null)
+            {
+                throw new InvalidIdException("Loan not found!");
+            }
+
+            loan.ReturnTime = DateTime.UtcNow.AddHours(4);
+            _loanRepocitory.Commit();
+        }
+
+   
+        public Book GetMostBorrowedBook()
+        {
+            var mostBorrowedBook = _loanRepocitory.GetAll()
+                .GroupBy(l => l.BookId)
+                .OrderByDescending(g => g.Count())
+                .FirstOrDefault();
+
+            if (mostBorrowedBook == null)
+            {
+                throw new InvalidOperationException("No borrowed books found.");
+            }
+
+            var book = _bookRepocitory.GetById(mostBorrowedBook.Key);
+            return book;
+        }
+
+        
+        public List<Borrower> GetOverdueBorrowers()
+        {
+            var overdueLoans = _loanRepocitory.GetAll()
+                .Where(l => l.MustReturnDate < DateTime.UtcNow.AddHours(4) && l.ReturnTime == null)
+                .ToList();
+
+            var overdueBorrowers = overdueLoans
+                .Select(l => _borrowerRepocitory.GetById(l.BorrowId))
+                .Where(b => b != null)
+                .ToList();
+
+            return overdueBorrowers;
+        }
+
+        
+        public List<BorrowerHistoryDTO> GetBorrowerHistory(int borrowerId)
+        {
+            var borrowerLoans = _loanRepocitory.GetAll()
+                .Where(l => l.BorrowId == borrowerId)
+                .ToList();
+
+            var history = borrowerLoans
+                .Select(l => new BorrowerHistoryDTO
+                {
+                    BookTitle = _bookRepocitory.GetById(l.BookId)?.Title,
+                    BorrowDate = l.BorrowDate,
+                    ReturnDate = l.ReturnTime
+                })
+                .ToList();
+
+            return history;
+        }
+
+
+
+
+
     }
 }
 

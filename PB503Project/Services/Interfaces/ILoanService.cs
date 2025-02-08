@@ -1,5 +1,7 @@
 ﻿using System;
+using PB503Project.DTOs.BorrowerDTO;
 using PB503Project.DTOs.LoanDTO;
+using PB503Project.Models;
 
 namespace PB503Project.Services.Interfaces
 {
@@ -14,6 +16,14 @@ namespace PB503Project.Services.Interfaces
 		List<GetAllLoanDTO> GetAll();
 
         void BorrowBook(int borrowerId, int bookId);
+
+        void ReturnBook(int loanId);
+
+        Book GetMostBorrowedBook();
+        
+        List<Borrower> GetOverdueBorrowers();
+
+        List<BorrowerHistoryDTO> GetBorrowerHistory(int borrowerId);
     }
 }
 

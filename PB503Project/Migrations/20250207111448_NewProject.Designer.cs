@@ -12,8 +12,8 @@ using PB503Project.Data;
 namespace PB503Project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250206195738_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250207111448_NewProject")]
+    partial class NewProject
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

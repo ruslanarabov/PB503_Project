@@ -10,12 +10,14 @@ using PB503Project.Services.Interfaces;
 namespace PB503Project.Services.Impelementations
 {
     public class BorrowerService : IBorrowedService
+    
     {
         private readonly IBorrowerRepocitory _borrowerRepocitory;
+        
 
         public BorrowerService()
         {
-            _borrowerRepocitory = new BorrowerRepocitory();                      
+            _borrowerRepocitory = new BorrowerRepocitory();
         }
         
 
@@ -30,7 +32,9 @@ namespace PB503Project.Services.Impelementations
             var borrower = new Borrower
             {
                 Name = createBorrowDTO.Name,
-                Email = createBorrowDTO.Email
+                Email = createBorrowDTO.Email,
+                CreateAt = DateTime.UtcNow.AddHours(4)
+                
             };
 
             _borrowerRepocitory.Add(borrower);
