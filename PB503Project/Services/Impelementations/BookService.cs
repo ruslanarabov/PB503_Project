@@ -12,11 +12,13 @@ namespace PB503Project.Services.Impelementations
     {
         private readonly IBookRepocitory _bookRepocitory;
         private readonly IAuthorRepocitory _authorRepocitory;
+        private readonly ILoanRepocitory _loanRepocitory;
 
         public BookService()
         {
             _bookRepocitory = new BookRepocitory();
             _authorRepocitory = new AuthorRepocitory();
+            _loanRepocitory = new LoanRepocitory();
         }
 
         public void Add(CreateBookDTO createBookDTO)
@@ -53,7 +55,7 @@ namespace PB503Project.Services.Impelementations
             var book = _bookRepocitory.GetAll();
             if (!book.Any())
             {
-                throw new InvalidInputException("There is no Book!");
+                throw new InvalidInputException("There are no books available!");
             }
             return _bookRepocitory.GetAll().Select(book => new GetAllBooksDTO
             {
@@ -61,8 +63,9 @@ namespace PB503Project.Services.Impelementations
                 Title = book.Title,
                 Descriptions = book.Desc,
                 PublishYear = book.PublishYear,
-                Authors = book.Authors != null ? book.Authors.Select(a => a.Name).ToList() : new List<string>(),
-                IsBorow = book.LoanItem != null
+                Authors = book.Authors != null && book.Authors.Any() ? book.Authors.Select(a => a.Name).ToList() : new List<string> { "No Author" },
+                IsBorow = !_loanRepocitory.GetAll().Any(l => l.BookId == book.Id && l.ReturnTime == null)
+
             }).ToList();
         }
 

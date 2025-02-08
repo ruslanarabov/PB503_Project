@@ -15,12 +15,14 @@ namespace PB503Project.Services.Impelementations
         private readonly ILoanRepocitory _loanRepocitory;
         private readonly IBorrowerRepocitory _borrowerRepocitory;
         private readonly IBookRepocitory _bookRepocitory;
+        private readonly ILoanItemRepocitory _loanItemRepocitory;
 
         public LoanService()
         {
             _loanRepocitory = new LoanRepocitory();
             _borrowerRepocitory = new BorrowerRepocitory();
             _bookRepocitory = new BookRepocitory();
+            _loanItemRepocitory = new LoanItemRepocitory();
         }
 
         public void Add(CreateLoanDTO createLoanDTO)
@@ -45,6 +47,43 @@ namespace PB503Project.Services.Impelementations
             _loanRepocitory.Commit();
         }
 
+        //public void BorrowBook(int borrowerId, int bookId)
+        //{
+        //    var borrower = _borrowerRepocitory.GetById(borrowerId);
+        //    if (borrower == null)
+        //    {
+        //        throw new InvalidIdException("Borrower not found!");
+        //    }
+
+        //    var book = _bookRepocitory.GetById(bookId);
+        //    if (book == null)
+        //    {
+        //        throw new InvalidIdException("Book not found!");
+        //    }
+
+
+        //    var existingLoan = _loanRepocitory.GetAll()
+        //        .FirstOrDefault(l => l.BorrowId == borrowerId && l.BookId == bookId && l.ReturnTime == null);
+
+        //    if (existingLoan != null)
+        //    {
+        //        throw new InvalidOperationException("This book is already borrowed by this borrower and has't been returned.");
+        //    }
+
+
+        //    var newLoan = new Loan
+        //    {
+        //        BorrowId = borrowerId,
+        //        BookId = bookId,
+        //        BorrowDate = DateTime.UtcNow.AddHours(4),
+        //        ReturnTime = null
+        //    };
+
+        //    _loanRepocitory.Add(newLoan);
+        //    _loanRepocitory.Commit();
+        //}
+
+
         public void BorrowBook(int borrowerId, int bookId)
         {
             var borrower = _borrowerRepocitory.GetById(borrowerId);
@@ -59,28 +98,38 @@ namespace PB503Project.Services.Impelementations
                 throw new InvalidIdException("Book not found!");
             }
 
-
             var existingLoan = _loanRepocitory.GetAll()
                 .FirstOrDefault(l => l.BorrowId == borrowerId && l.BookId == bookId && l.ReturnTime == null);
 
             if (existingLoan != null)
             {
-                throw new InvalidOperationException("This book is already borrowed by this borrower and has't been returned.");
+                throw new InvalidOperationException("This book is already borrowed by this borrower and hasn't been returned.");
             }
 
-
+            
             var newLoan = new Loan
             {
                 BorrowId = borrowerId,
-                BookId = bookId,
                 BorrowDate = DateTime.UtcNow.AddHours(4),
+                MustReturnDate = DateTime.UtcNow.AddHours(4).AddDays(15), 
                 ReturnTime = null
             };
 
             _loanRepocitory.Add(newLoan);
             _loanRepocitory.Commit();
-        }
 
+            
+            var loanItem = new LoanItem
+            {
+                BookId = bookId,
+                LoanId = newLoan.Id,
+                Loan = newLoan,
+                Book = book
+            };
+
+            _loanItemRepocitory.Add(loanItem);
+            _loanItemRepocitory.Commit();
+        }
 
 
 

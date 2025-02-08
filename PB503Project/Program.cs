@@ -150,7 +150,8 @@ static void BookActions(IBookService bookService)
             {
                 books.ForEach(book =>
                 {
-                    string authorNames = book.Authors != null ? string.Join(", ", book.Authors) : "No Author";
+                    string authorNames = book.Authors != null && book.Authors.Any()
+                    ? string.Join(", ", book.Authors.Select(a => a)) : "No Author";
                     Console.WriteLine($"{book.Id} - {book.Title} - {book.Descriptions} - {book.PublishYear} - Authors: {authorNames}");
                 });
             }
@@ -386,6 +387,83 @@ static void BorrowBook(ILoanService loanService, IBookService bookService, IBorr
 
 
 
+static void ReturnBook(ILoanService loanService)
+{
+    try
+    {
+        Console.Clear();
+        Console.Write("Enter Loan ID: ");
+        int loanId;
+        if (!int.TryParse(Console.ReadLine(), out loanId))
+        {
+            Console.WriteLine("Invalid Loan ID format. Please enter a valid number.");
+            return;
+        }
+        loanService.ReturnBook(loanId);
+
+        Console.WriteLine("Book returned successfully.");
+    }
+    catch (InvalidOperationException ex) 
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+    catch (Exception ex) 
+    {
+        Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+    }
+}
+
+
+static void GetMostBorrowedBook(ILoanService loanService)
+{
+    var book = loanService.GetMostBorrowedBook();
+
+    Console.WriteLine($"Most borrowed book: {book.Title} - Borrowed {book.LoanItem}");
+}
+
+static void GetOverdueBorrowers(ILoanService loanService)
+{
+    var overdueBorrowers = loanService.GetOverdueBorrowers();
+    Console.WriteLine("Overdue Borrowers:");
+    overdueBorrowers.ForEach(b => Console.WriteLine($"{b.Id} - {b.Name}"));
+}
+
+static void GetBorrowerHistory(ILoanService loanService)
+{
+    try
+    {
+        Console.Clear();
+        Console.Write("Enter Borrower ID: ");        
+        int borrowerId;
+        if (!int.TryParse(Console.ReadLine(), out borrowerId))
+        {
+            Console.WriteLine("Invalid Borrower ID format. Please enter a valid number.");
+            return;
+        }     
+        var history = loanService.GetBorrowerHistory(borrowerId);
+
+        if (history == null || history.Count == 0)
+        {
+            Console.WriteLine("No history found for the given borrower.");
+        }
+        else
+        {
+            Console.WriteLine("Borrower History:");
+            history.ForEach(h => Console.WriteLine($"Book: {h.BookTitle}, Borrowed On: {h.BorrowDate}, Returned On: {h.ReturnDate}"));
+        }
+    }
+    catch (ArgumentException ex) 
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+    catch (Exception ex) 
+    {
+        Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+    }
+}
+
+
+
 static void FilterBooksByTitle(IBookService bookService)
 {
     Console.Clear();
@@ -415,71 +493,6 @@ static void FilterBooksByTitle(IBookService bookService)
         Console.WriteLine($"{data.Id} - {data.Title} - {data.PublishYear} - {string.Join(", ", data.Authors)}");
     }
 }
-
-static void ReturnBook(ILoanService loanService)
-{
-    Console.Clear();
-    Console.Write("Enter Loan ID: ");
-    int loanId = int.Parse(Console.ReadLine());
-    loanService.ReturnBook(loanId);
-    Console.WriteLine("Book returned successfully.");
-}
-
-static void GetMostBorrowedBook(ILoanService loanService)
-{
-    var book = loanService.GetMostBorrowedBook();
-
-    Console.WriteLine($"Most borrowed book: {book.Title} - Borrowed {book.LoanItem} times");
-}
-
-static void GetOverdueBorrowers(ILoanService loanService)
-{
-    var overdueBorrowers = loanService.GetOverdueBorrowers();
-    Console.WriteLine("Overdue Borrowers:");
-    overdueBorrowers.ForEach(b => Console.WriteLine($"{b.Id} - {b.Name}"));
-}
-
-static void GetBorrowerHistory(ILoanService loanService)
-{
-    Console.Clear();
-    Console.Write("Enter Borrower ID: ");
-    int borrowerId = int.Parse(Console.ReadLine());
-    var history = loanService.GetBorrowerHistory(borrowerId);
-    Console.WriteLine("Borrower History:");
-    history.ForEach(h => Console.WriteLine($"Book: {h.BookTitle}, Borrowed On: {h.BorrowDate}, Returned On: {h.ReturnDate}"));
-}
-
-//static void FilterBooksByAuthor(IBookService bookService)
-//{
-//    Console.Clear();
-//    Console.Write("Search by author name: ");
-//    var keyWord = Console.ReadLine();
-
-//    while (string.IsNullOrWhiteSpace(keyWord) || keyWord.Any(char.IsDigit))
-//    {
-//        Console.WriteLine("Author name cannot be empty or contains number please try again.");
-//    }
-
-//    var books = bookService.GetAll()
-//                       .Where(b => b.Authors.Any(a => a.Trim().ToLower()
-//                       .Contains(keyWord.Trim().ToLower())))
-//                       .ToList();
-
-
-//    if (books.Count == 0)
-//    {
-//        Console.WriteLine("No books found for this author.");
-//        return;
-//    }
-
-//    Console.Clear();
-//    foreach (var book in books)
-//    {
-//        Console.WriteLine($"{book.Id} - {book.Title} - {book.PublishYear} - {string.Join(", ", book.Authors.Select(a => a.Name))}");
-//    }
-//}
-
-
 
 static void FilterBooksByAuthor(IBookService bookService)
 {
